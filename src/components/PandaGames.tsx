@@ -1,77 +1,59 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { motion, AnimatePresence } from 'framer-motion'
-import { soundManager } from '../utils/sounds'
 
 const GameContainer = styled(motion.div)`
   position: fixed;
-  bottom: 5rem;
-  left: 2rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background: #000;
-  border: 2px solid #fff;
-  padding: 1rem;
-  font-family: 'Press Start 2P', cursive;
-  color: #fff;
-  z-index: 1000;
-  min-width: 300px;
+  border: 2px solid #00ff00;
+  padding: 20px;
+  z-index: 1100;
+  width: 90%;
+  max-width: 500px;
 `
 
-const GameTitle = styled.h3`
-  font-size: 1rem;
-  margin-bottom: 1rem;
-  text-align: center;
-  color: #00ff00;
-`
-
-const GameGrid = styled.div`
+const Grid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+  gap: 10px;
+  margin: 20px 0;
 `
 
-const GameCell = styled(motion.button)<{ isActive: boolean; isCorrect: boolean }>`
+const Cell = styled.button<{ isSelected: boolean }>`
   aspect-ratio: 1;
-  background: ${props => props.isActive ? '#00ff00' : '#333'};
-  border: 1px solid ${props => props.isCorrect ? '#00ff00' : '#fff'};
-  color: ${props => props.isActive ? '#000' : '#fff'};
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.8rem;
+  background: ${props => props.isSelected ? '#00ff00' : '#000'};
+  border: 2px solid #00ff00;
   cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-`
-
-const GameControls = styled.div`
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-`
-
-const GameButton = styled(motion.button)`
-  background: transparent;
-  border: 1px solid #fff;
-  color: #fff;
-  padding: 0.5rem;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.6rem;
-  cursor: pointer;
-  flex: 1;
+  transition: all 0.3s ease;
 
   &:hover {
-    background: #fff;
-    color: #000;
+    background: ${props => props.isSelected ? '#00ff00' : '#001100'};
   }
 `
 
-const GameMessage = styled(motion.div)`
-  text-align: center;
-  margin-bottom: 1rem;
+const Title = styled.h2`
   color: #00ff00;
-  font-size: 0.8rem;
+  text-align: center;
+  margin-bottom: 20px;
+  font-family: 'Press Start 2P', cursive;
+`
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #00ff00;
+  cursor: pointer;
+  font-size: 20px;
+
+  &:hover {
+    color: #fff;
+  }
 `
 
 interface PandaGamesProps {
@@ -79,116 +61,45 @@ interface PandaGamesProps {
   onClose: () => void
 }
 
-const patterns = [
-  {
-    name: 'Binary',
-    pattern: [1, 0, 1, 0, 1, 0, 1, 0, 1],
-    hint: 'Binary code: 1s and 0s'
-  },
-  {
-    name: 'RGB',
-    pattern: [1, 0, 0, 0, 1, 0, 0, 0, 1],
-    hint: 'RGB pattern: Red, Green, Blue'
-  },
-  {
-    name: 'Loop',
-    pattern: [1, 1, 1, 0, 0, 0, 1, 1, 1],
-    hint: 'Infinite loop pattern'
-  }
-]
-
 const PandaGames: React.FC<PandaGamesProps> = ({ isVisible, onClose }) => {
-  const [currentPattern, setCurrentPattern] = useState(0)
   const [selectedCells, setSelectedCells] = useState<number[]>([])
-  const [message, setMessage] = useState('')
-  const [score, setScore] = useState(0)
 
   const handleCellClick = (index: number) => {
-    if (selectedCells.includes(index)) {
-      setSelectedCells(prev => prev.filter(i => i !== index))
-      soundManager.play('error')
-    } else if (selectedCells.length < 9) {
-      setSelectedCells(prev => [...prev, index])
-      soundManager.play('click')
-    }
+    setSelectedCells(prev => {
+      const newSelection = [...prev]
+      const cellIndex = newSelection.indexOf(index)
+      
+      if (cellIndex === -1) {
+        newSelection.push(index)
+      } else {
+        newSelection.splice(cellIndex, 1)
+      }
+      
+      return newSelection
+    })
   }
 
-  const checkPattern = () => {
-    const isCorrect = selectedCells.every((cell, index) => 
-      patterns[currentPattern].pattern[index] === (selectedCells.includes(index) ? 1 : 0)
-    )
-
-    if (isCorrect) {
-      setMessage('Correct! Well done!')
-      soundManager.play('success')
-      setScore(prev => prev + 100)
-      setTimeout(() => {
-        setCurrentPattern(prev => (prev + 1) % patterns.length)
-        setSelectedCells([])
-        setMessage('')
-      }, 2000)
-    } else {
-      setMessage('Try again!')
-      soundManager.play('error')
-    }
-  }
-
-  const resetGame = () => {
-    setSelectedCells([])
-    setMessage('')
-    setScore(0)
-    setCurrentPattern(0)
-    soundManager.play('click')
-  }
+  if (!isVisible) return null
 
   return (
     <AnimatePresence>
       {isVisible && (
         <GameContainer
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
         >
-          <GameTitle>Code Puzzle</GameTitle>
-          <GameMessage>{message || patterns[currentPattern].hint}</GameMessage>
-          <GameGrid>
-            {Array.from({ length: 9 }).map((_, index) => (
-              <GameCell
-                key={index}
-                isActive={selectedCells.includes(index)}
-                isCorrect={patterns[currentPattern].pattern[index] === 1}
-                onClick={() => handleCellClick(index)}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {selectedCells.includes(index) ? '1' : '0'}
-              </GameCell>
+          <Title>Memory Pattern</Title>
+          <CloseButton onClick={onClose}>×</CloseButton>
+          <Grid>
+            {Array.from({ length: 9 }, (_, i) => (
+              <Cell
+                key={i}
+                isSelected={selectedCells.includes(i)}
+                onClick={() => handleCellClick(i)}
+              />
             ))}
-          </GameGrid>
-          <GameControls>
-            <GameButton
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={checkPattern}
-            >
-              Check
-            </GameButton>
-            <GameButton
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={resetGame}
-            >
-              Reset
-            </GameButton>
-            <GameButton
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={onClose}
-            >
-              Close
-            </GameButton>
-          </GameControls>
-          <GameMessage>Score: {score}</GameMessage>
+          </Grid>
         </GameContainer>
       )}
     </AnimatePresence>

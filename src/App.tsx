@@ -1,175 +1,63 @@
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { motion } from 'framer-motion'
+import GlobalStyle from './styles/GlobalStyle'
+import { soundManager } from './utils/sounds'
 import HeroSection from './components/HeroSection'
 import AboutSection from './components/AboutSection'
 import ProjectsSection from './components/ProjectsSection'
 import SkillsSection from './components/SkillsSection'
 import ContactSection from './components/ContactSection'
 import CustomCursor from './components/CustomCursor'
-import DebugOverlay from './components/DebugOverlay'
-import GlobalStyle from './styles/GlobalStyle'
+import SoundControl from './components/SoundControl'
 import VolumeControl from './components/VolumeControl'
-import PixelMascot from './components/PixelMascot'
-import RetroLoadingScreen from './components/RetroLoadingScreen'
-import PageAnimations from './components/PageAnimations'
-import ExperienceSection from './components/ExperienceSection'
-import NonCodingProjectsSection from './components/NonCodingProjectsSection'
+import PixelPanda from './components/PixelPanda'
+import PandaGames from './components/PandaGames'
 
-const AppContainer = styled.div`
-  min-height: 100vh;
-  background: #000;
+const Container = styled.div`
+  background-color: #000;
   color: #00ff00;
-  overflow-x: hidden;
-  position: relative;
-`
-
-const MainContent = styled.div`
-  opacity: 1;
-  pointer-events: auto;
-  transition: opacity 0.3s ease;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-`
-
-const Section = styled.section`
   min-height: 100vh;
-  padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-
-  @media (max-width: 768px) {
-    padding: 2rem 1rem;
-    min-height: auto;
-  }
+  cursor: none;
 `
-
-type CursorType = 'default' | 'loading' | 'hover' | 'pointer'
 
 const App: React.FC = () => {
-  const [cursorType, setCursorType] = useState<CursorType>('default')
-  const [fps, setFps] = useState<number>(0)
-  const [errors] = useState<string[]>([])
-  const [activeInteractions] = useState<string[]>([])
-  const [volume, setVolume] = useState(0.5)
-  const [isLoading, setIsLoading] = useState(true)
+  const [isMuted, setIsMuted] = useState(false)
+  const [isGameVisible, setIsGameVisible] = useState(false)
 
-  // FPS Counter
   useEffect(() => {
-    let frameCount = 0
-    let lastTime = performance.now()
-    
-    const updateFps = () => {
-      const currentTime = performance.now()
-      frameCount++
-      
-      if (currentTime - lastTime >= 1000) {
-        setFps(Math.round(frameCount * 1000 / (currentTime - lastTime)))
-        frameCount = 0
-        lastTime = currentTime
-      }
-      
-      requestAnimationFrame(updateFps)
+    if (!isMuted) {
+      soundManager.playBackground()
+    } else {
+      soundManager.stopBackground()
     }
-    
-    requestAnimationFrame(updateFps)
-  }, [])
+  }, [isMuted])
 
-  // Update cursor type based on interactions
-  const handleMouseEnter = () => setCursorType('hover')
-  const handleMouseLeave = () => setCursorType('default')
-  const handleClick = () => {
-    setCursorType('pointer')
-    setTimeout(() => setCursorType('default'), 150)
+  const handleVolumeChange = (volume: number) => {
+    soundManager.setVolume(volume)
   }
 
-  const handleStartClick = () => {
-    setIsLoading(true)
-    setCursorType('loading')
+  const handleSoundToggle = () => {
+    const newMutedState = !isMuted
+    setIsMuted(newMutedState)
+    soundManager.setMuted(newMutedState)
   }
-
-  const handleLoadingComplete = () => {
-    setIsLoading(false)
-    setCursorType('default')
-    setTimeout(() => {
-      document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
-    }, 100)
-  }
-
-  const handleVolumeChange = (newVolume: number) => {
-    setVolume(newVolume)
-  }
-
-  // Handle keyboard events for loading screen
-  useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (isLoading) {
-        setIsLoading(false)
-        setCursorType('default')
-      }
-    }
-
-    window.addEventListener('keydown', handleKeyPress)
-    return () => window.removeEventListener('keydown', handleKeyPress)
-  }, [isLoading])
 
   return (
-    <PageAnimations>
-      <AppContainer>
-        <GlobalStyle />
-        <CustomCursor type={cursorType} />
+    <>
+      <GlobalStyle />
+      <Container>
+        <CustomCursor />
+        <HeroSection />
+        <AboutSection />
+        <ProjectsSection />
+        <SkillsSection />
+        <ContactSection id="contact" />
+        <PixelPanda />
+        <PandaGames isVisible={isGameVisible} onClose={() => setIsGameVisible(false)} />
         <VolumeControl onVolumeChange={handleVolumeChange} />
-        
-        <MainContent>
-          <Section id="hero">
-            <HeroSection onStartClick={handleStartClick} />
-          </Section>
-
-          <Section id="about">
-            <AboutSection id="about" />
-          </Section>
-
-          <Section id="experience">
-            <ExperienceSection />
-          </Section>
-
-          <Section id="projects">
-            <ProjectsSection id="projects" />
-          </Section>
-
-          <Section id="non-coding-projects">
-            <NonCodingProjectsSection />
-          </Section>
-
-          <Section id="skills">
-            <SkillsSection id="skills" />
-          </Section>
-
-          <Section id="contact">
-            <ContactSection id="contact" />
-          </Section>
-
-          <DebugOverlay 
-            fps={fps}
-            errors={errors}
-            activeInteractions={activeInteractions}
-          />
-        </MainContent>
-      </AppContainer>
-
-      {isLoading && (
-        <RetroLoadingScreen onLoadingComplete={handleLoadingComplete} />
-      )}
-
-      <PixelMascot />
-    </PageAnimations>
+        <SoundControl onToggle={handleSoundToggle} />
+      </Container>
+    </>
   )
 }
 

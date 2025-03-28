@@ -2,64 +2,45 @@ import React from 'react'
 import styled from 'styled-components'
 import { motion } from 'framer-motion'
 
-const Container = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
+const Section = styled.section`
+  min-height: 100vh;
   padding: 4rem 2rem;
   display: flex;
-  gap: 3rem;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   position: relative;
   z-index: 1;
+`
+
+const Title = styled(motion.h2)`
+  font-family: 'Press Start 2P', cursive;
+  color: #00ff00;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+`
+
+const Content = styled.div`
+  display: flex;
+  gap: 4rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  align-items: flex-start;
 
   @media (max-width: 768px) {
     flex-direction: column;
-    padding: 2rem 1rem;
     gap: 2rem;
   }
 `
 
-const LeftSection = styled.div`
-  flex: 0 0 300px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-
-  @media (max-width: 768px) {
-    flex: 1;
-    width: 100%;
-  }
-`
-
-const RightSection = styled.div`
-  flex: 1;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(0, 255, 0, 0.2);
-  border-radius: 8px;
-  padding: 2rem;
-  backdrop-filter: blur(10px);
-
-  @media (max-width: 768px) {
-    padding: 1.5rem;
-  }
-`
-
 const ProfileImage = styled(motion.img)`
-  width: 250px;
-  height: 250px;
-  border-radius: 50%;
+  width: 300px;
+  height: 300px;
+  border-radius: 15px;
   object-fit: cover;
-  border: 3px solid #00ff00;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
-  margin-bottom: 1.5rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    transform: scale(1.05);
-    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
-    border-color: #00ffaa;
-  }
+  border: 2px solid #00ff00;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
 
   @media (max-width: 768px) {
     width: 200px;
@@ -67,227 +48,111 @@ const ProfileImage = styled(motion.img)`
   }
 `
 
-const ProfileTitle = styled(motion.h2)`
-  font-family: 'Press Start 2P', cursive;
-  color: #00ff00;
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-  position: relative;
-  display: inline-block;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, #00ff00, transparent);
-  }
-
-  @media (max-width: 768px) {
-    font-size: 1.2rem;
-  }
+const InfoContainer = styled.div`
+  flex: 1;
 `
 
-const ProfileDescription = styled(motion.p)`
-  font-family: 'Press Start 2P', cursive;
-  color: #fff;
-  font-size: 0.8rem;
-  line-height: 1.6;
-  margin-bottom: 1.5rem;
-  text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-
-  @media (max-width: 768px) {
-    font-size: 0.7rem;
-  }
-`
-
-const InfoBox = styled.div`
-  width: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(0, 255, 0, 0.2);
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-top: 1rem;
-  backdrop-filter: blur(10px);
-
-  @media (max-width: 768px) {
-    padding: 1rem;
-  }
-`
-
-const InfoItem = styled.div`
-  text-align: left;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(0, 255, 0, 0.1);
-
-  &:last-child {
-    margin-bottom: 0;
-    padding-bottom: 0;
-    border-bottom: none;
-  }
-`
-
-const InfoLabel = styled.div`
-  font-family: 'Press Start 2P', cursive;
-  color: #00ff00;
-  font-size: 0.7rem;
-  margin-bottom: 0.3rem;
-  text-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
-`
-
-const InfoValue = styled.div`
-  font-family: 'Press Start 2P', cursive;
-  color: #fff;
-  font-size: 0.8rem;
-  text-shadow: 0 0 5px rgba(0, 255, 0, 0.2);
-`
-
-const SkillsTitle = styled.h3`
-  font-family: 'Press Start 2P', cursive;
-  color: #00ff00;
-  font-size: 1.2rem;
+const Description = styled(motion.p)`
+  color: #ffffff;
+  font-size: 1.1rem;
+  line-height: 1.8;
   margin-bottom: 2rem;
-  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  text-align: justify;
 `
 
-const SkillsGrid = styled.div`
+const SkillsContainer = styled(motion.div)`
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 1.5rem;
+  margin-top: 2rem;
+`
 
-  @media (max-width: 768px) {
-    grid-template-columns: 1fr;
-    gap: 1rem;
+const SkillCard = styled(motion.div)`
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+
+  h3 {
+    color: #00ff00;
+    margin-bottom: 1rem;
+    font-family: 'Press Start 2P', cursive;
+    font-size: 1rem;
   }
-`
 
-const SkillItem = styled(motion.div)`
-  background: rgba(0, 255, 0, 0.05);
-  border: 1px solid rgba(0, 255, 0, 0.2);
-  border-radius: 4px;
-  padding: 1rem;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(0, 255, 0, 0.1);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.2);
-  }
-`
-
-const SkillName = styled.div`
-  font-family: 'Press Start 2P', cursive;
-  color: #fff;
-  font-size: 0.8rem;
-  margin-bottom: 0.5rem;
-`
-
-const SkillLevel = styled.div<{ level: number }>`
-  height: 4px;
-  background: rgba(0, 255, 0, 0.2);
-  border-radius: 2px;
-  overflow: hidden;
-
-  &::after {
-    content: '';
-    display: block;
-    height: 100%;
-    width: ${props => props.level}%;
-    background: linear-gradient(90deg, #00ff00, #00ffaa);
-    box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-    transition: width 0.5s ease;
+  p {
+    color: #ffffff;
   }
 `
 
 const AboutSection: React.FC = () => {
   return (
-    <Container>
-      <LeftSection>
-        <ProfileImage 
-          src="/profile.jpg" 
+    <Section>
+      <Title
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        About Me
+      </Title>
+      <Content>
+        <ProfileImage
+          src="/profile.jpg"
           alt="Leonardo Ranoesendjojo"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0, x: -50 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         />
-        <ProfileTitle>Leonardo Ranoesendjojo</ProfileTitle>
-        <ProfileDescription>
-          🌟 18-year-old aspiring Software Engineer | Youth Tech Advocate | Lifelong Learner
-        </ProfileDescription>
-        <InfoBox>
-          <InfoItem>
-            <InfoLabel>Location</InfoLabel>
-            <InfoValue>Paramaribo, Suriname</InfoValue>
-          </InfoItem>
-          <InfoItem>
-            <InfoLabel>Education</InfoLabel>
-            <InfoValue>ICT Studies at NATIN</InfoValue>
-          </InfoItem>
-          <InfoItem>
-            <InfoLabel>Experience</InfoLabel>
-            <InfoValue>2+ Years</InfoValue>
-          </InfoItem>
-        </InfoBox>
-      </LeftSection>
-
-      <RightSection>
-        <SkillsTitle>Skills & Expertise</SkillsTitle>
-        <SkillsGrid>
-          <SkillItem
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+        <InfoContainer>
+          <Description
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
           >
-            <SkillName>Programming</SkillName>
-            <SkillLevel level={90} />
-          </SkillItem>
-          <SkillItem
+            I'm a passionate Full Stack Developer and robotics enthusiast from Paramaribo, Suriname. Currently pursuing my ICT Studies at NATIN, I combine my technical expertise with creative problem-solving to build innovative solutions. My journey in technology has led me to explore various aspects of software development, robotics, and project management.
+          </Description>
+          <SkillsContainer
             initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
           >
-            <SkillName>Robotics</SkillName>
-            <SkillLevel level={85} />
-          </SkillItem>
-          <SkillItem
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <SkillName>Web Development</SkillName>
-            <SkillLevel level={95} />
-          </SkillItem>
-          <SkillItem
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <SkillName>Project Management</SkillName>
-            <SkillLevel level={85} />
-          </SkillItem>
-          <SkillItem
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.6 }}
-          >
-            <SkillName>Mentoring</SkillName>
-            <SkillLevel level={90} />
-          </SkillItem>
-          <SkillItem
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.7 }}
-          >
-            <SkillName>Team Leadership</SkillName>
-            <SkillLevel level={80} />
-          </SkillItem>
-        </SkillsGrid>
-      </RightSection>
-    </Container>
+            <SkillCard
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3>Programming</h3>
+              <p>TypeScript, Python, Java</p>
+            </SkillCard>
+            <SkillCard
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3>Robotics</h3>
+              <p>Robot Design, Control Systems</p>
+            </SkillCard>
+            <SkillCard
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3>Web Development</h3>
+              <p>React, Node.js, Next.js</p>
+            </SkillCard>
+            <SkillCard
+              whileHover={{ scale: 1.05 }}
+              transition={{ duration: 0.2 }}
+            >
+              <h3>Leadership</h3>
+              <p>Team Management, Mentoring</p>
+            </SkillCard>
+          </SkillsContainer>
+        </InfoContainer>
+      </Content>
+    </Section>
   )
 }
 

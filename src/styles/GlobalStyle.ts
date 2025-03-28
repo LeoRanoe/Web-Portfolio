@@ -10,11 +10,16 @@ const GlobalStyle = createGlobalStyle`
   }
 
   body {
-    font-family: 'Press Start 2P', cursive;
-    background: #000000;
+    font-family: 'Inter', sans-serif;
+    background-color: #0a0a0a;
     color: #ffffff;
+    line-height: 1.6;
     overflow-x: hidden;
     cursor: none;
+  }
+
+  html {
+    scroll-behavior: smooth;
   }
 
   ::-webkit-scrollbar {

@@ -1,82 +1,58 @@
 // Sound effect URLs (you'll need to add actual sound files to your public directory)
-const SOUNDS = {
-  hover: '/sounds/hover.mp3',
-  click: '/sounds/click.mp3',
-  success: '/sounds/success.mp3',
-  error: '/sounds/error.mp3',
-  type: '/sounds/type.mp3',
-  submit: '/sounds/submit.mp3',
-  startup: '/sounds/startup.mp3',
-  background: '/sounds/background.mp3',
-} as const
+export const SOUNDS = {
+  hover: new Audio('/sounds/hover.mp3'),
+  click: new Audio('/sounds/click.mp3'),
+  success: new Audio('/sounds/success.mp3'),
+  error: new Audio('/sounds/error.mp3'),
+  background: new Audio('/sounds/background.mp3')
+};
 
 class SoundManager {
-  private sounds: { [key: string]: HTMLAudioElement }
-  private isMuted: boolean
+  private volume: number = 0.5;
+  private isMuted: boolean = false;
 
   constructor() {
-    this.sounds = {
-      click: new Audio('/sounds/click.mp3'),
-      hover: new Audio('/sounds/hover.mp3'),
-      type: new Audio('/sounds/type.mp3'),
-      success: new Audio('/sounds/success.mp3'),
-      error: new Audio('/sounds/error.mp3'),
-      background: new Audio('/sounds/background.mp3')
-    }
+    Object.values(SOUNDS).forEach(sound => {
+      sound.volume = this.volume;
+    });
 
-    this.isMuted = false
-
-    // Set volume for all sounds
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = 0.3
-    })
-
-    // Loop background music
-    this.sounds.background.loop = true
+    SOUNDS.background.loop = true;
   }
 
-  play(soundName: keyof typeof this.sounds) {
-    if (this.isMuted) return
-
-    const sound = this.sounds[soundName]
-    if (sound) {
-      sound.currentTime = 0
-      sound.play().catch(error => {
-        console.warn('Failed to play sound:', error)
-      })
-    }
-  }
-
-  toggleMute() {
-    this.isMuted = !this.isMuted
-    if (this.isMuted) {
-      this.sounds.background.pause()
-    } else {
-      this.sounds.background.play().catch(error => {
-        console.warn('Failed to play background music:', error)
-      })
-    }
-  }
-
-  startBackgroundMusic() {
+  play(soundName: keyof typeof SOUNDS) {
     if (!this.isMuted) {
-      this.sounds.background.play().catch(error => {
-        console.warn('Failed to play background music:', error)
-      })
+      const sound = SOUNDS[soundName];
+      sound.currentTime = 0;
+      sound.play().catch(() => {});
     }
-  }
-
-  stopBackgroundMusic() {
-    this.sounds.background.pause()
-    this.sounds.background.currentTime = 0
   }
 
   setVolume(volume: number) {
-    const normalizedVolume = Math.max(0, Math.min(1, volume))
-    Object.values(this.sounds).forEach(sound => {
-      sound.volume = normalizedVolume
-    })
+    this.volume = volume;
+    Object.values(SOUNDS).forEach(sound => {
+      sound.volume = volume;
+    });
+  }
+
+  setMuted(muted: boolean) {
+    this.isMuted = muted;
+    if (muted) {
+      Object.values(SOUNDS).forEach(sound => {
+        sound.pause();
+      });
+    }
+  }
+
+  playBackground() {
+    if (!this.isMuted) {
+      SOUNDS.background.play().catch(() => {});
+    }
+  }
+
+  stopBackground() {
+    SOUNDS.background.pause();
+    SOUNDS.background.currentTime = 0;
   }
 }
 
-export const soundManager = new SoundManager() 
+export const soundManager = new SoundManager(); 

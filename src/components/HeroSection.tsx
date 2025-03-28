@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { motion } from 'framer-motion'
 
 interface HeroSectionProps {
-  onStartClick: () => void
+  onStartClick?: () => void
 }
 
 const HeroContainer = styled.div`

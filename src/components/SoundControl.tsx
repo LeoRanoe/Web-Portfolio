@@ -5,30 +5,26 @@ import { soundManager } from '../utils/sounds'
 
 const Container = styled(motion.div)`
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  z-index: 1000;
+  bottom: 20px;
+  right: 20px;
   display: flex;
-  gap: 1rem;
   align-items: center;
+  gap: 10px;
+  z-index: 1000;
 `
 
-const Button = styled(motion.button)`
-  background: #000;
-  border: 2px solid #fff;
-  color: #fff;
-  font-family: 'Press Start 2P', cursive;
-  font-size: 0.8rem;
-  padding: 0.5rem;
+const Button = styled.button<{ isMuted: boolean }>`
+  background: none;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 8px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  opacity: ${props => props.isMuted ? 0.5 : 1};
 
   &:hover {
-    background: #fff;
+    background: #00ff00;
     color: #000;
   }
 `
@@ -63,14 +59,18 @@ const VolumeSlider = styled.input`
   }
 `
 
-const SoundControl: React.FC = () => {
+interface SoundControlProps {
+  onToggle: () => void;
+}
+
+const SoundControl: React.FC<SoundControlProps> = ({ onToggle }) => {
   const [isMuted, setIsMuted] = useState(false)
   const [volume, setVolume] = useState(0.3)
 
-  const handleMuteToggle = () => {
-    const newMuteState = soundManager.toggleMute()
-    setIsMuted(newMuteState)
-    soundManager.play('click')
+  const handleClick = () => {
+    const newMutedState = !isMuted;
+    setIsMuted(newMutedState);
+    onToggle();
   }
 
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,9 +82,9 @@ const SoundControl: React.FC = () => {
 
   return (
     <Container
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 1 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
     >
       <VolumeSlider
         type="range"
@@ -95,11 +95,10 @@ const SoundControl: React.FC = () => {
         onChange={handleVolumeChange}
       />
       <Button
-        onClick={handleMuteToggle}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        isMuted={isMuted}
+        onClick={handleClick}
       >
-        {isMuted ? '🔇' : '🔊'}
+        {isMuted ? 'Unmute' : 'Mute'}
       </Button>
     </Container>
   )

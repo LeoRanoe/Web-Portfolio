@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import { motion } from 'framer-motion'
 
@@ -40,7 +40,7 @@ const VolumeContainer = styled(motion.div)`
   }
 `
 
-const VolumeIcon = styled(motion.button)<{ isMuted: boolean }>`
+const VolumeIcon = styled.button<{ isMuted: boolean }>`
   width: 24px;
   height: 24px;
   background: ${props => props.isMuted ? '#001100' : '#000000'};
@@ -112,7 +112,7 @@ const VolumeSegments = styled.div`
 `
 
 interface VolumeControlProps {
-  onVolumeChange?: (volume: number) => void;
+  onVolumeChange: (volume: number) => void;
 }
 
 const VolumeControl: React.FC<VolumeControlProps> = ({ onVolumeChange }) => {
@@ -125,13 +125,14 @@ const VolumeControl: React.FC<VolumeControlProps> = ({ onVolumeChange }) => {
     const newVolume = Math.max(0, Math.min(1, x / rect.width))
     setVolume(newVolume)
     setIsMuted(false)
-    onVolumeChange?.(newVolume)
+    onVolumeChange(newVolume)
   }
 
-  const toggleMute = useCallback(() => {
-    setIsMuted(!isMuted)
-    onVolumeChange?.(isMuted ? volume : 0)
-  }, [isMuted, volume, onVolumeChange])
+  const toggleMute = () => {
+    const newMutedState = !isMuted
+    setIsMuted(newMutedState)
+    onVolumeChange(newMutedState ? 0 : volume)
+  }
 
   return (
     <VolumeContainer

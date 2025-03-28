@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { motion, AnimatePresence } from 'framer-motion'
-import { soundManager } from '../utils/sounds'
+
+type MessageType = 'input' | 'response' | 'error'
+
+interface Message {
+  type: MessageType
+  content: string
+}
 
 interface ContactSectionProps {
   id: string
@@ -88,7 +94,7 @@ const TerminalContent = styled.div`
   }
 `
 
-const TerminalLine = styled.div<{ type: 'input' | 'response' | 'error' }>`
+const TerminalLine = styled.div<{ type: MessageType }>`
   margin: 0.5rem 0;
   display: flex;
   align-items: flex-start;
@@ -111,79 +117,62 @@ const Prompt = styled.span`
 `
 
 const Input = styled.input`
-  background: transparent;
+  background: none;
   border: none;
   color: #00ff00;
-  font-family: 'Fira Code', monospace;
-  font-size: 1rem;
-  flex: 1;
+  font-family: monospace;
+  width: 100%;
   outline: none;
-  caret-color: #00ff00;
-
+  
   &::placeholder {
-    color: rgba(0, 255, 0, 0.5);
+    color: #00ff00;
+    opacity: 0.5;
   }
 `
 
 const ContactSection: React.FC<ContactSectionProps> = ({ id }) => {
-  const [terminalOutput, setTerminalOutput] = useState<Array<{ type: 'input' | 'response' | 'error', content: string }>>([
-    { type: 'response', content: 'Welcome to the contact terminal! Type "help" for available commands.' },
+  const [terminalOutput, setTerminalOutput] = useState<Message[]>([
+    { type: 'response' as const, content: 'Welcome to the terminal! Type "help" for available commands.' }
   ])
-  const [input, setInput] = useState('')
-  const [isTyping, setIsTyping] = useState(false)
+  const [currentInput, setCurrentInput] = useState('')
 
   const handleCommand = (command: string) => {
-    const newOutput = [...terminalOutput, { type: 'input', content: command }]
-    setTerminalOutput(newOutput)
+    const newOutput: Message[] = [
+      ...terminalOutput,
+      { type: 'input' as const, content: `> ${command}` }
+    ]
 
     switch (command.toLowerCase()) {
       case 'help':
         setTerminalOutput([
           ...newOutput,
-          { type: 'response', content: 'Available commands:' },
-          { type: 'response', content: '- help: Show this help message' },
-          { type: 'response', content: '- email: Get my email address' },
-          { type: 'response', content: '- github: Get my GitHub profile' },
-          { type: 'response', content: '- linkedin: Get my LinkedIn profile' },
-          { type: 'response', content: '- clear: Clear the terminal' },
+          { type: 'response' as const, content: 'Available commands:' },
+          { type: 'response' as const, content: '- help: Show this help message' },
+          { type: 'response' as const, content: '- email: Show contact email' },
+          { type: 'response' as const, content: '- clear: Clear the terminal' }
         ])
         break
       case 'email':
         setTerminalOutput([
           ...newOutput,
-          { type: 'response', content: 'Email: your.email@example.com' },
-        ])
-        break
-      case 'github':
-        setTerminalOutput([
-          ...newOutput,
-          { type: 'response', content: 'GitHub: https://github.com/yourusername' },
-        ])
-        break
-      case 'linkedin':
-        setTerminalOutput([
-          ...newOutput,
-          { type: 'response', content: 'LinkedIn: https://linkedin.com/in/yourusername' },
+          { type: 'response' as const, content: 'Contact email: your.email@example.com' }
         ])
         break
       case 'clear':
-        setTerminalOutput([
-          { type: 'response', content: 'Welcome to the contact terminal! Type "help" for available commands.' },
-        ])
+        setTerminalOutput([])
         break
       default:
         setTerminalOutput([
           ...newOutput,
-          { type: 'error', content: 'Command not found. Type "help" for available commands.' },
+          { type: 'error' as const, content: 'Command not found. Type "help" for available commands.' }
         ])
     }
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && input.trim()) {
-      soundManager.play('type')
-      handleCommand(input)
-      setInput('')
+    if (e.key === 'Enter' && currentInput.trim()) {
+      handleCommand(currentInput.trim())
+      setCurrentInput('')
     }
   }
 
@@ -209,7 +198,7 @@ const ContactSection: React.FC<ContactSectionProps> = ({ id }) => {
         </TerminalHeader>
         <TerminalContent>
           <AnimatePresence>
-            {terminalOutput.map((line, index) => (
+            {terminalOutput.map((message, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, x: -20 }}
@@ -217,9 +206,9 @@ const ContactSection: React.FC<ContactSectionProps> = ({ id }) => {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.2 }}
               >
-                <TerminalLine type={line.type}>
-                  {line.type === 'input' && <Prompt>$</Prompt>}
-                  {line.content}
+                <TerminalLine type={message.type}>
+                  {message.type === 'input' && <Prompt>$</Prompt>}
+                  {message.content}
                 </TerminalLine>
               </motion.div>
             ))}
@@ -227,15 +216,12 @@ const ContactSection: React.FC<ContactSectionProps> = ({ id }) => {
           <TerminalLine type="input">
             <Prompt>$</Prompt>
             <Input
-              type="text"
-              value={input}
+              value={currentInput}
               onChange={(e) => {
-                setInput(e.target.value)
-                setIsTyping(true)
+                setCurrentInput(e.target.value)
               }}
               onKeyPress={handleKeyPress}
               placeholder="Type a command..."
-              autoFocus
             />
           </TerminalLine>
         </TerminalContent>
