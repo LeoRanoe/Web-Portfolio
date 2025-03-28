@@ -95,33 +95,23 @@ const ProjectsGrid = styled.div`
 const projects: Project[] = [
   {
     id: '1',
-    title: 'Project 1',
-    description: 'A brief description of the project and its key features.',
-    technologies: ['React', 'TypeScript', 'Node.js'],
-    link: 'https://project1.com',
-    github: 'https://github.com/yourusername/project1',
+    title: 'Transactify',
+    description: 'Developed an API with frontend for secure transactions platform during AIthon Hackathon. Collaborated under tight deadlines to create a working product from concept to deployment.',
+    technologies: ['Node.js', 'PHP', 'Laravel', 'React Native', 'JavaScript', 'SQL', 'AI'],
+    link: 'https://github.com/yourusername/transactify',
+    github: 'https://github.com/yourusername/transactify',
     questType: 'main',
     level: 5
   },
   {
     id: '2',
-    title: 'Project 2',
-    description: 'Another project description showcasing different technologies.',
-    technologies: ['Vue.js', 'Firebase', 'Tailwind CSS'],
-    link: 'https://project2.com',
-    github: 'https://github.com/yourusername/project2',
-    questType: 'side',
-    level: 3
-  },
-  {
-    id: '3',
-    title: 'Project 3',
-    description: 'A third project with its own unique features and tech stack.',
-    technologies: ['Angular', 'MongoDB', 'Express'],
-    link: 'https://project3.com',
-    github: 'https://github.com/yourusername/project3',
-    questType: 'daily',
-    level: 1
+    title: 'Megapixel Developments',
+    description: 'Founded a freelance web development company with fellow students, providing budget-friendly websites for individuals and small businesses.',
+    technologies: ['Web Development', 'Project Management', 'Client Communication', 'Team Collaboration'],
+    link: 'https://megapixeldevelopments.com',
+    github: 'https://github.com/yourusername/megapixel',
+    questType: 'main',
+    level: 4
   }
 ]
 

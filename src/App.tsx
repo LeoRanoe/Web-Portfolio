@@ -13,6 +13,8 @@ import VolumeControl from './components/VolumeControl'
 import PixelMascot from './components/PixelMascot'
 import RetroLoadingScreen from './components/RetroLoadingScreen'
 import PageAnimations from './components/PageAnimations'
+import ExperienceSection from './components/ExperienceSection'
+import NonCodingProjectsSection from './components/NonCodingProjectsSection'
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -134,8 +136,16 @@ const App: React.FC = () => {
             <AboutSection id="about" />
           </Section>
 
+          <Section id="experience">
+            <ExperienceSection />
+          </Section>
+
           <Section id="projects">
             <ProjectsSection id="projects" />
+          </Section>
+
+          <Section id="non-coding-projects">
+            <NonCodingProjectsSection />
           </Section>
 
           <Section id="skills">
@@ -151,14 +161,14 @@ const App: React.FC = () => {
             errors={errors}
             activeInteractions={activeInteractions}
           />
-
-          <PixelMascot />
         </MainContent>
       </AppContainer>
 
       {isLoading && (
         <RetroLoadingScreen onLoadingComplete={handleLoadingComplete} />
       )}
+
+      <PixelMascot />
     </PageAnimations>
   )
 }

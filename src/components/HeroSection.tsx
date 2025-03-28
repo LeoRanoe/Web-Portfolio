@@ -149,6 +149,34 @@ const ScrollIndicator = styled(motion.div)`
   }
 `
 
+const socialLinks = [
+  {
+    name: 'GitHub',
+    url: 'https://github.com/LeoRanoe',
+    icon: <i className="fab fa-github"></i>
+  },
+  {
+    name: 'LinkedIn',
+    url: 'https://www.linkedin.com/in/leonardo-ranoesendjojo-b1a460271/',
+    icon: <i className="fab fa-linkedin"></i>
+  },
+  {
+    name: 'Instagram',
+    url: 'https://www.instagram.com/leonardo_06x/',
+    icon: <i className="fab fa-instagram"></i>
+  },
+  {
+    name: 'Facebook',
+    url: 'https://www.facebook.com/leonardo.ranoesendjojo.1/',
+    icon: <i className="fab fa-facebook"></i>
+  },
+  {
+    name: 'Email',
+    url: 'mailto:lranoesendjojo@gmail.com',
+    icon: <i className="fas fa-envelope"></i>
+  }
+]
+
 const HeroSection: React.FC<HeroSectionProps> = ({ onStartClick }) => {
   return (
     <HeroContainer>
@@ -171,27 +199,17 @@ const HeroSection: React.FC<HeroSectionProps> = ({ onStartClick }) => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, delay: 0.4 }}
       >
-        <SocialLink
-          href="https://github.com/yourusername"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-github"></i>
-        </SocialLink>
-        <SocialLink
-          href="https://linkedin.com/in/yourusername"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-linkedin"></i>
-        </SocialLink>
-        <SocialLink
-          href="https://twitter.com/yourusername"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <i className="fab fa-twitter"></i>
-        </SocialLink>
+        {socialLinks.map((link, index) => (
+          <SocialLink
+            key={index}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={link.name}
+          >
+            {link.icon}
+          </SocialLink>
+        ))}
       </SocialLinks>
       <StartButton
         onClick={onStartClick}
