@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="80" height="80" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+  <!-- Body -->
+  <rect x="25" y="25" width="30" height="30" fill="#000000"/>
+  
+  <!-- Neck -->
+  <rect x="55" y="30" width="10" height="15" fill="#000000"/>
+  
+  <!-- Head -->
+  <rect x="65" y="25" width="10" height="10" fill="#000000"/>
+  
+  <!-- Jaw -->
+  <rect x="65" y="35" width="10" height="5" fill="#000000"/>
+  
+  <!-- Eye -->
+  <rect x="70" y="27" width="3" height="3" fill="#FFFFFF"/>
+  
+  <!-- Legs -->
+  <rect x="30" y="55" width="5" height="10" fill="#000000"/>
+  <rect x="45" y="55" width="5" height="10" fill="#000000"/>
+  
+  <!-- Arms -->
+  <rect x="25" y="35" width="5" height="5" fill="#000000"/>
+  <rect x="25" y="40" width="5" height="5" fill="#000000"/>
+  
+  <!-- Tail -->
+  <rect x="20" y="30" width="5" height="10" fill="#000000"/>
+  
+  <!-- Spikes on back -->
+  <rect x="35" y="20" width="3" height="5" fill="#000000"/>
+  <rect x="40" y="18" width="3" height="7" fill="#000000"/>
+  <rect x="45" y="20" width="3" height="5" fill="#000000"/>
+  
+  <!-- Teeth -->
+  <rect x="65" y="35" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="68" y="35" width="2" height="2" fill="#FFFFFF"/>
+  <rect x="71" y="35" width="2" height="2" fill="#FFFFFF"/>
+</svg> 
