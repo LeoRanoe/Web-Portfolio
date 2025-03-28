@@ -1,119 +1,200 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 
+const scanline = keyframes`
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+`;
+
+const glow = keyframes`
+  0%, 100% { text-shadow: 0 0 10px rgba(0, 255, 0, 0.5); }
+  50% { text-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
+`;
+
+const pulse = keyframes`
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+`;
+
 const Section = styled.section`
-  padding: 2rem;
-  background: #000;
-  color: #00ff00;
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(180deg, #000000 0%, #001100 100%);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 0, 0.03) 0px,
+      rgba(0, 255, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    animation: ${scanline} 10s linear infinite;
+  }
 `;
 
-const Title = styled.h2`
-  font-size: 2rem;
-  margin-bottom: 2rem;
-  text-align: center;
+const Title = styled(motion.h2)`
   font-family: 'Press Start 2P', cursive;
+  color: #00ff00;
+  font-size: 2.5rem;
+  margin-bottom: 3rem;
+  text-align: center;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+  position: relative;
+  animation: ${glow} 2s ease-in-out infinite;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #00ff00, transparent);
+  }
 `;
 
-const SkillsGrid = styled.div`
+const InventoryGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  padding: 2rem;
 `;
 
-const SkillCard = styled(motion.div)`
-  background: #111;
+const CategoryContainer = styled(motion.div)`
+  background: rgba(0, 17, 0, 0.5);
   border: 2px solid #00ff00;
-  padding: 1.5rem;
-  border-radius: 8px;
-  text-align: center;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.1);
+  min-height: 300px;
+  display: flex;
+  flex-direction: column;
 `;
 
-const SkillTitle = styled.h3`
-  font-size: 1.5rem;
-  margin-bottom: 1rem;
-  color: #00ff00;
+const CategoryTitle = styled.h3`
   font-family: 'Press Start 2P', cursive;
-`;
-
-const SkillDescription = styled.p`
+  color: #00ff00;
   font-size: 1rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-`;
-
-const SkillsList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  text-align: left;
-`;
-
-const SkillItem = styled.li`
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+  text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
   display: flex;
   align-items: center;
+  gap: 0.5rem;
+  word-wrap: break-word;
 
-  &:before {
+  &::before {
     content: '>';
-    margin-right: 0.5rem;
     color: #00ff00;
   }
 `;
 
-const cardVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
+const SkillList = styled.ul`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+`;
+
+const SkillItem = styled(motion.li)`
+  font-family: 'Press Start 2P', cursive;
+  color: #ffffff;
+  font-size: 0.7rem;
+  padding: 0.8rem;
+  background: rgba(0, 255, 0, 0.1);
+  border: 1px solid #00ff00;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  word-wrap: break-word;
+  line-height: 1.4;
+
+  &:hover {
+    background: rgba(0, 255, 0, 0.2);
+    transform: translateX(5px);
+  }
+`;
+
+const skillCategories = [
+  {
+    id: 1,
+    title: 'Programming',
+    icon: '💻',
+    skills: ['PHP', 'Laravel', 'JavaScript', 'Node.js', 'React', 'TypeScript']
+  },
+  {
+    id: 2,
+    title: 'IT Skills',
+    icon: '🔧',
+    skills: ['Troubleshooting', 'Networking (CCNA)', 'Computer Hardware', 'System Administration']
+  },
+  {
+    id: 3,
+    title: 'Robotics',
+    icon: '🤖',
+    skills: ['Robot Design', 'Control Systems', 'Programming', 'Team Leadership']
+  },
+  {
+    id: 4,
+    title: 'Soft Skills',
+    icon: '📚',
+    skills: ['Problem Solving', 'Teamwork', 'Project Management', 'Communication']
+  }
+];
 
 const SkillsSection: React.FC = () => {
-  const skills = [
-    {
-      title: 'Frontend Development',
-      description: 'Building responsive and interactive user interfaces',
-      items: ['React', 'TypeScript', 'Next.js', 'Styled Components', 'Tailwind CSS']
-    },
-    {
-      title: 'Backend Development',
-      description: 'Creating scalable server-side applications',
-      items: ['Node.js', 'Express', 'Python', 'Django', 'PostgreSQL']
-    },
-    {
-      title: 'DevOps & Tools',
-      description: 'Managing deployment and development workflow',
-      items: ['Git', 'Docker', 'AWS', 'CI/CD', 'Linux']
-    }
-  ];
-
   return (
     <Section id="skills">
-      <Title>Skills</Title>
-      <SkillsGrid>
-        {skills.map((skill, index) => (
-          <SkillCard
-            key={index}
-            variants={cardVariants}
-            initial="hidden"
-            whileInView="visible"
+      <Title
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+      >
+        Inventory Menu
+      </Title>
+      <InventoryGrid>
+        {skillCategories.map((category, index) => (
+          <CategoryContainer
+            key={category.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: index * 0.2 }}
+            transition={{ duration: 0.8, delay: index * 0.2 }}
           >
-            <SkillTitle>{skill.title}</SkillTitle>
-            <SkillDescription>{skill.description}</SkillDescription>
-            <SkillsList>
-              {skill.items.map((item, itemIndex) => (
-                <SkillItem key={itemIndex}>{item}</SkillItem>
+            <CategoryTitle>
+              {category.icon} {category.title}
+            </CategoryTitle>
+            <SkillList>
+              {category.skills.map((skill, i) => (
+                <SkillItem
+                  key={i}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  {skill}
+                </SkillItem>
               ))}
-            </SkillsList>
-          </SkillCard>
+            </SkillList>
+          </CategoryContainer>
         ))}
-      </SkillsGrid>
+      </InventoryGrid>
     </Section>
   );
 };

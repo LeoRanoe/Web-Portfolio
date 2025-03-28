@@ -1,26 +1,72 @@
 import React, { useState } from 'react'
-import styled from 'styled-components'
-import { motion, AnimatePresence } from 'framer-motion'
+import styled, { keyframes } from 'styled-components'
+import { motion } from 'framer-motion'
 
-type MessageType = 'input' | 'response' | 'error'
+const scanline = keyframes`
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+`;
 
-interface Message {
-  type: MessageType
-  content: string
-}
+const blink = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+`;
+
+const glitch = keyframes`
+  0% {
+    clip-path: polygon(0 2%, 100% 2%, 100% 5%, 0 5%);
+    transform: translate(0);
+  }
+  20% {
+    clip-path: polygon(0 15%, 100% 15%, 100% 15%, 0 15%);
+    transform: translate(-5px);
+  }
+  40% {
+    clip-path: polygon(0 1%, 100% 1%, 100% 2%, 0 2%);
+    transform: translate(5px);
+  }
+  60% {
+    clip-path: polygon(0 44%, 100% 44%, 100% 44%, 0 44%);
+    transform: translate(-5px);
+  }
+  80% {
+    clip-path: polygon(0 50%, 100% 50%, 100% 55%, 0 55%);
+    transform: translate(0);
+  }
+`;
 
 interface ContactSectionProps {
-  id: string
+  id?: string
 }
 
 const Section = styled.section`
   min-height: 100vh;
   padding: 4rem 2rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  background: linear-gradient(180deg, #001100 0%, #000000 100%);
   position: relative;
-  z-index: 1;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 200%;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(0, 255, 0, 0.03) 0px,
+      rgba(0, 255, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 2px
+    );
+    pointer-events: none;
+    animation: ${scanline} 10s linear infinite;
+  }
 `
 
 const Title = styled(motion.h2)`
@@ -31,150 +77,196 @@ const Title = styled(motion.h2)`
   text-align: center;
   text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
   position: relative;
-  display: inline-block;
 
   &::after {
     content: '';
     position: absolute;
-    bottom: -5px;
-    left: 0;
-    width: 100%;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
     height: 2px;
     background: linear-gradient(90deg, transparent, #00ff00, transparent);
   }
 `
 
-const TerminalContainer = styled(motion.div)`
-  width: 100%;
-  max-width: 800px;
-  background: rgba(0, 0, 0, 0.8);
+const FormContainer = styled(motion.div)`
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: rgba(0, 17, 0, 0.5);
   border: 2px solid #00ff00;
-  border-radius: 8px;
-  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+  border-radius: 15px;
+  position: relative;
   overflow: hidden;
-  position: relative;
-  z-index: 1;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      45deg,
+      transparent 0%,
+      rgba(0, 255, 0, 0.1) 50%,
+      transparent 100%
+    );
+    pointer-events: none;
+  }
 `
 
-const TerminalHeader = styled.div`
-  background: #00ff00;
-  padding: 0.5rem 1rem;
+const Form = styled.form`
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  gap: 1.5rem;
 `
 
-const TerminalButton = styled.div<{ color: string }>`
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: ${props => props.color};
-`
-
-const TerminalContent = styled.div`
-  padding: 1rem;
-  font-family: 'Fira Code', monospace;
-  color: #00ff00;
-  min-height: 400px;
-  max-height: 600px;
-  overflow-y: auto;
+const InputGroup = styled.div`
   position: relative;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: rgba(0, 255, 0, 0.1);
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: #00ff00;
-    border-radius: 4px;
-  }
 `
 
-const TerminalLine = styled.div<{ type: MessageType }>`
-  margin: 0.5rem 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  color: ${props => {
-    switch (props.type) {
-      case 'error':
-        return '#ff4444'
-      case 'input':
-        return '#00ff00'
-      default:
-        return '#ffffff'
-    }
-  }};
-`
-
-const Prompt = styled.span`
+const Label = styled.label`
+  font-family: 'Press Start 2P', cursive;
   color: #00ff00;
-  margin-right: 0.5rem;
+  font-size: 0.8rem;
+  margin-bottom: 0.5rem;
+  display: block;
 `
 
 const Input = styled.input`
-  background: none;
-  border: none;
-  color: #00ff00;
-  font-family: monospace;
   width: 100%;
+  padding: 0.8rem;
+  background: rgba(0, 255, 0, 0.1);
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  color: #00ff00;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
   outline: none;
-  
+  transition: all 0.3s ease;
+
+  &:focus {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    background: rgba(0, 255, 0, 0.15);
+  }
+
   &::placeholder {
-    color: #00ff00;
-    opacity: 0.5;
+    color: rgba(0, 255, 0, 0.5);
   }
 `
 
+const TextArea = styled.textarea`
+  width: 100%;
+  padding: 0.8rem;
+  background: rgba(0, 255, 0, 0.1);
+  border: 2px solid #00ff00;
+  border-radius: 8px;
+  color: #00ff00;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
+  min-height: 150px;
+  outline: none;
+  transition: all 0.3s ease;
+  resize: vertical;
+
+  &:focus {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+    background: rgba(0, 255, 0, 0.15);
+  }
+
+  &::placeholder {
+    color: rgba(0, 255, 0, 0.5);
+  }
+`
+
+const SubmitButton = styled(motion.button)`
+  padding: 1rem 2rem;
+  background: #00ff00;
+  border: none;
+  border-radius: 8px;
+  color: #000;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    background: #00dd00;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 255, 0, 0.3);
+  }
+
+  &:disabled {
+    background: #004400;
+    cursor: not-allowed;
+    transform: none;
+  }
+`
+
+const StatusMessage = styled(motion.div)<{ success?: boolean }>`
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.8rem;
+  text-align: center;
+  background: ${props => props.success ? 'rgba(0, 255, 0, 0.2)' : 'rgba(255, 0, 0, 0.2)'};
+  color: ${props => props.success ? '#00ff00' : '#ff0000'};
+  border: 2px solid ${props => props.success ? '#00ff00' : '#ff0000'};
+  animation: ${glitch} 0.5s infinite;
+`
+
+const Cursor = styled.span`
+  display: inline-block;
+  width: 8px;
+  height: 1em;
+  background: #00ff00;
+  margin-left: 4px;
+  animation: ${blink} 1s infinite;
+`
+
 const ContactSection: React.FC<ContactSectionProps> = ({ id }) => {
-  const [terminalOutput, setTerminalOutput] = useState<Message[]>([
-    { type: 'response' as const, content: 'Welcome to the terminal! Type "help" for available commands.' }
-  ])
-  const [currentInput, setCurrentInput] = useState('')
+  const [formState, setFormState] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+  const [status, setStatus] = useState<{ message: string; success: boolean } | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCommand = (command: string) => {
-    const newOutput: Message[] = [
-      ...terminalOutput,
-      { type: 'input' as const, content: `> ${command}` }
-    ]
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setStatus(null);
 
-    switch (command.toLowerCase()) {
-      case 'help':
-        setTerminalOutput([
-          ...newOutput,
-          { type: 'response' as const, content: 'Available commands:' },
-          { type: 'response' as const, content: '- help: Show this help message' },
-          { type: 'response' as const, content: '- email: Show contact email' },
-          { type: 'response' as const, content: '- clear: Clear the terminal' }
-        ])
-        break
-      case 'email':
-        setTerminalOutput([
-          ...newOutput,
-          { type: 'response' as const, content: 'Contact email: your.email@example.com' }
-        ])
-        break
-      case 'clear':
-        setTerminalOutput([])
-        break
-      default:
-        setTerminalOutput([
-          ...newOutput,
-          { type: 'error' as const, content: 'Command not found. Type "help" for available commands.' }
-        ])
+    try {
+      // Add your form submission logic here
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Simulated API call
+      setStatus({
+        message: 'Message sent successfully! I will get back to you soon.',
+        success: true
+      });
+      setFormState({ name: '', email: '', message: '' });
+    } catch (error) {
+      setStatus({
+        message: 'Failed to send message. Please try again later.',
+        success: false
+      });
+    } finally {
+      setIsSubmitting(false);
     }
-  }
+  };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && currentInput.trim()) {
-      handleCommand(currentInput.trim())
-      setCurrentInput('')
-    }
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormState(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
 
   return (
     <Section id={id}>
@@ -184,50 +276,72 @@ const ContactSection: React.FC<ContactSectionProps> = ({ id }) => {
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
       >
-        Contact
+        Contact Me<Cursor />
       </Title>
-      <TerminalContainer
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+      <FormContainer
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
       >
-        <TerminalHeader>
-          <TerminalButton color="#ff5f56" />
-          <TerminalButton color="#ffbd2e" />
-          <TerminalButton color="#27c93f" />
-        </TerminalHeader>
-        <TerminalContent>
-          <AnimatePresence>
-            {terminalOutput.map((message, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ duration: 0.2 }}
-              >
-                <TerminalLine type={message.type}>
-                  {message.type === 'input' && <Prompt>$</Prompt>}
-                  {message.content}
-                </TerminalLine>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-          <TerminalLine type="input">
-            <Prompt>$</Prompt>
+        <Form onSubmit={handleSubmit}>
+          <InputGroup>
+            <Label htmlFor="name">Name:</Label>
             <Input
-              value={currentInput}
-              onChange={(e) => {
-                setCurrentInput(e.target.value)
-              }}
-              onKeyPress={handleKeyPress}
-              placeholder="Type a command..."
+              type="text"
+              id="name"
+              name="name"
+              value={formState.name}
+              onChange={handleChange}
+              placeholder="Enter your name"
+              required
             />
-          </TerminalLine>
-        </TerminalContent>
-      </TerminalContainer>
+          </InputGroup>
+          <InputGroup>
+            <Label htmlFor="email">Email:</Label>
+            <Input
+              type="email"
+              id="email"
+              name="email"
+              value={formState.email}
+              onChange={handleChange}
+              placeholder="Enter your email"
+              required
+            />
+          </InputGroup>
+          <InputGroup>
+            <Label htmlFor="message">Message:</Label>
+            <TextArea
+              id="message"
+              name="message"
+              value={formState.message}
+              onChange={handleChange}
+              placeholder="Type your message here"
+              required
+            />
+          </InputGroup>
+          <SubmitButton
+            type="submit"
+            disabled={isSubmitting}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isSubmitting ? 'Sending...' : 'Send Message'}
+          </SubmitButton>
+        </Form>
+        {status && (
+          <StatusMessage
+            success={status.success}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+          >
+            {status.message}
+          </StatusMessage>
+        )}
+      </FormContainer>
     </Section>
-  )
-}
+  );
+};
 
 export default ContactSection 
